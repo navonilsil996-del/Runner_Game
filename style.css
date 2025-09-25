@@ -1,0 +1,13 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  background: #87CEEB; /* Sky blue */
+  -webkit-tap-highlight-color: transparent;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #cceeff; /* light sky so player/ground/obstacles stand out */
+}
