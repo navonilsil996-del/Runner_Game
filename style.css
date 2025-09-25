@@ -11,3 +11,32 @@ canvas {
   height: 100%;
   background: #cceeff; /* light sky so player/ground/obstacles stand out */
 }
+
+/* On-screen buttons */
+#btnJump, #btnCrouch {
+  position: fixed;
+  bottom: 20px;
+  width: 110px;
+  height: 60px;
+  border: none;
+  border-radius: 12px;
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+  background: rgba(0, 0, 0, 0.65);
+  cursor: pointer;
+  user-select: none;
+}
+
+#btnJump {
+  right: 1120px; /* place Jump to the left */
+}
+
+#btnCrouch {
+  right: 1000px;  /* place Crouch on far right */
+}
+
+#btnJump:active,
+#btnCrouch:active {
+  background: rgba(0, 0, 0, 0.85);
+}
