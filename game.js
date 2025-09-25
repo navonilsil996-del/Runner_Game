@@ -3,7 +3,7 @@ const ctx = canvas.getContext('2d');
 
 const groundHeight = 100;
 
-// Player object
+// Player object - inverted isosceles trapezoid (wide top, narrow bottom)
 const player = {
   x: 150,
   topWidth: 60,     // wide side (top width)
@@ -11,8 +11,8 @@ const player = {
   height: 50,       // trapezoid height
   y: 0,
   dy: 0,
-  gravity: 2.2,   // faster gravity
-  jumpForce: -25, // higher jump
+  gravity: 2.2,
+  jumpForce: -25,
   isCrouching: false
 };
 
@@ -43,18 +43,18 @@ window.addEventListener('resize', resizeCanvas);
 // Compute obstacle spawn interval
 function computeSpawnInterval() {
   const interval = Math.round(
-    BASE_SPAWN_INTERVAL - (speed - START_SPEED) * SPAWN_INCREASE_PER_SPEED////////////////////////
+    BASE_SPAWN_INTERVAL - (speed - START_SPEED) * SPAWN_INCREASE_PER_SPEED
   );
   const jitter = Math.floor(Math.random() * 20) - 10;
-  return Math.max(19, interval + jitter);/////////////////////
+  return Math.max(20, interval + jitter);
 }
 
 // Spawn obstacle (ground or lifted, with rare variations)
 function spawnObstacle() {
   const w = 50, h = 50;
 
-  const veryHighLifted = Math.random() < 0.05; // ~5% chance
-  const lifted = veryHighLifted || Math.random() < 0.20;
+  const veryHighLifted = Math.random() < 0.01; // ~1% chance
+  const lifted = veryHighLifted || Math.random() < 0.25;
 
   let y;
   if (veryHighLifted) {
@@ -73,8 +73,8 @@ function spawnObstacle() {
     passed: false
   });
 
-  if (Math.random() < 0.15) { // ~15% chance
-    const offset = 15 + Math.random() * 40;
+  if (Math.random() < 0.15) { // ~15% chance double obstacle
+    const offset = 30 + Math.random() * 40;
     obstacles.push({
       x: canvas.width + 10 + offset,
       y,
@@ -113,7 +113,7 @@ function drawGameOver() {
   ctx.fillText('Score: ' + score, canvas.width / 2, canvas.height / 2 + 20);
 
   ctx.font = '18px Arial';
-  ctx.fillText('Press W / Swipe Up to restart', canvas.width / 2, canvas.height / 2 + 58);
+  ctx.fillText('Press W / Swipe Up / Tap Jump to restart', canvas.width / 2, canvas.height / 2 + 58);
   ctx.restore();
 }
 
@@ -130,17 +130,18 @@ function crouch() {
   if (player.isCrouching) return;
   player.isCrouching = true;
 
-  player.height = 35;   // shorter trapezoid
+  // shorter trapezoid for duck
+  player.height = 35;
   player.y = canvas.height - player.height - groundHeight;
 
   setTimeout(() => {
-    player.height = 50; // restore normal
+    player.height = 50;
     player.y = canvas.height - player.height - groundHeight;
     player.isCrouching = false;
   }, 600);
 }
 
-// Keyboard controls
+// Keyboard controls (W/S)
 window.addEventListener('keydown', (e) => {
   if (e.code === 'KeyW') jump();
   else if (e.code === 'KeyS') crouch();
@@ -180,11 +181,12 @@ function getPlayerPolygon(p) {
   const bottomY = p.y + p.height;
   const offset = (p.topWidth - p.bottomWidth) / 2;
 
+  // Inverted trapezoid: top is wide, bottom is narrow
   return [
     [p.x, topY],                          // top-left
     [p.x + p.topWidth, topY],             // top-right
-    [p.x + p.topWidth - offset, bottomY], // bottom-right
-    [p.x + offset, bottomY]               // bottom-left
+    [p.x + p.topWidth - offset, bottomY], // bottom-right (narrower)
+    [p.x + offset, bottomY]               // bottom-left (narrower)
   ];
 }
 
@@ -313,3 +315,12 @@ function drawScene() {
 // Start game
 spawnTimer = computeSpawnInterval();
 requestAnimationFrame(loop);
+
+// On-screen button controls (only these lines added)
+document.getElementById("btnJump").addEventListener("click", () => {
+  jump();
+});
+
+document.getElementById("btnCrouch").addEventListener("click", () => {
+  crouch();
+});
